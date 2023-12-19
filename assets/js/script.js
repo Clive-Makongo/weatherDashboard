@@ -1,3 +1,6 @@
+// Count for five day
+let count = 0;
+
 function buildURL() {
     let city = $("#search-input").val();
     let APIKey = "9d0504afbf151af426c93ee392251718";
@@ -19,7 +22,11 @@ function buildURL() {
 function clear() {
     $("#city").empty();
     $("#today").empty();
-    $("#forecast").empty();
+    $("#day-one").empty();
+    $("#day-two").empty();
+    $("#day-three").empty();
+    $("#day-four").empty();
+    $("#day-five").empty();
 }
 
 // Create object with data
@@ -58,14 +65,15 @@ function createData(weatherData) {
 
 // display data on page
 function display(results) {
+    // Set count for 5 day back to 0
+    count = 0;
+
     let today = dayjs();
 
     let name = $("<h2>").text(results.cityName);
     let date = $("<h4>").text(today.$d)
 
     $("#city").append(name).append(date);
-    $("#today").append($("<h2>").text("Today:"));
-    $("#forecast").append($("<h2>").text("Five-Day Forecast:"));
 
     let resDate = [];
 
@@ -88,12 +96,6 @@ function display(results) {
                 results.temperature[i],
                 resDate[i], i
             );
-
-            if (resDate[i].$D == resDate[i - 1].$D) {
-                console.log("same")
-            }  else {
-                console.log("diff")
-            }
         };
     };
 };
@@ -130,8 +132,14 @@ function displayToday(results, i) {
 };
 
 function displayFiveDay(res, weather, humid, temp, resDate, i) {
+    // Increment Count for Five Day
+    count++
     //Make hourly div
-    let hour = $("<div>").addClass("hour" + i).addClass("col-lg-3").attr("data-day",resDate.$D);
+    let hour = $("<div>")
+      .addClass("hour" + i)
+      .addClass("col")
+      .attr("data-day", resDate.$D)
+      .css("border", "black solid 0.2px;");
 
     // display date
     let date = $("<h5>").text(res);
@@ -154,7 +162,25 @@ function displayFiveDay(res, weather, humid, temp, resDate, i) {
     hour.append(hum);
     //add class, id and data-attr
 
-    $("#forecast").append(hour);
+    console.log(count)
+    if (count <= 8) {
+      $("#day-one").append(hour);
+      console.log(count + "day one");
+    } else if (count > 8 && count <= 16) {
+      $("#day-two").append(hour);
+      console.log(count + "day two");
+    } else if (count > 16 && count <= 24) {
+      $("#day-three").append(hour);
+      console.log(count + "day three");
+    } else if (count > 24 && count <= 32) {
+      $("#day-four").append(hour);
+      console.log(count + "day four");
+    } else {
+      $("#day-five").append(hour);
+      console.log(count + "day two");
+    }
+  
+    
 };
 
 // display button per search
@@ -208,7 +234,11 @@ $("#search-button").on("click", function (event) {
 
 // Search with city buttons
 $(document).on("click", ".prev-city-button", function (event) {
+    // Set count back to 0
+    count = 0;
+
     clear();
+
 
     let city = $(this).text();
 
