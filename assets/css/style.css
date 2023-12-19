@@ -1,0 +1,16 @@
+#today {
+    display: flex;
+    justify-content: space-between;
+    
+}
+
+#forecast {
+    display: flex;
+    justify-content: space-between;
+    
+}
+
+.col-lg-3 {
+    
+    border: black solid 0.2px;
+} 

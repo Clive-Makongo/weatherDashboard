@@ -1,5 +1,5 @@
 function buildURL() {
-    var city = $("#search-input").val();
+    let city = $("#search-input").val();
     let APIKey = "9d0504afbf151af426c93ee392251718";
 
     // Build URL
@@ -13,7 +13,13 @@ function buildURL() {
     console.log($("#search-input").val());
 
     return queryURL;
+};
 
+// Clear data every search
+function clear() {
+    $("#city").empty();
+    $("#today").empty();
+    $("#forecast").empty();
 }
 
 // Create object with data
@@ -43,13 +49,12 @@ function createData(weatherData) {
 
         date.push(weatherData.list[i].dt_txt);
         results.date = date;
-
     }
 
     // store in Local Storage
     localStorage.setItem(results.cityName, JSON.stringify(results));
     return results;
-}
+};
 
 // display data on page
 function display(results) {
@@ -58,9 +63,11 @@ function display(results) {
     let name = $("<h2>").text(results.cityName);
     let date = $("<h4>").text(today.$d)
 
-    $("#today").append(name).append(date);
+    $("#city").append(name).append(date);
+    $("#today").append($("<h2>").text("Today:"));
+    $("#forecast").append($("<h2>").text("Five-Day Forecast:"));
+
     let resDate = [];
-    //console.log(name);
 
     for (let i = 0; i < results.date.length - 1; i++) {
         resDate[i] = dayjs(results.date[i], "DD-MM-YYYY");
@@ -68,61 +75,113 @@ function display(results) {
     for (let i = 0; i < results.date.length - 1; i++) {
         if (resDate[i].$D == today.$D) {
             console.log(resDate[i].$D, today.$D);
+
             displayToday(results, i)
-        } else {
+        };
+        if (resDate[i].$D != today.$D) {
             //console.log(resDate[i].$D, today.$D);
-            displayFiveDay(results.date[i], resDate[i], results.weather[i], results.humidity[i], results.temperature[i]);
-        }
-    }
 
-
+            displayFiveDay(
+                results.date[i],
+                results.weather[i],
+                results.humidity[i],
+                results.temperature[i],
+                i
+            );
+        };
+    };
 };
 
 function displayToday(results, i) {
-  // Weather icon
-  let weather = $("<h4>").text(results.weather[i]);
-  $("#today").append(weather);
+    //Make hourlly div
+    let hour = $("<div>").addClass("hour" + i).addClass("col-lg-3");
 
-  //Temperature
-  let temp = $("<h4>").text(results.temperature[i]);
-  $("#today").append(temp);
+    // Weather icon
+    let date = $("<h4>").text(results.date[i]);
+    hour.append(date);
 
-  //Humidity
-  let hum = $("<h4>").text(results.humidity[i]);
-  $("#today").append(hum);
 
-  //Humidity
-  let wind = $("<h4>").text(results.WindSpeed[i]);
-  $("#today").append(wind);
+    // Weather icon
+    let weather = $("<h4>").text("Weather: " + results.weather[i]);
+    hour.append(weather)
+
+    //Temperature
+    let temp = $("<h4>").text(
+        "Temperature: " + results.temperature[i].toFixed(2)
+    );
+    hour.append(temp);
+
+    //Humidity
+    let hum = $("<h4>").text("Humidity: " + results.humidity[i]);
+    hour.append(hum);
+
+    //Humidity
+    let wind = $("<h4>").text("Wind Speed: " + results.windSpeed[i]);
+    hour.append(wind);
+
+    //Append to Today div
+    $("#today").append(hour);
 };
 
-function displayFiveDay(res, resDate, weather, humid, temp) {
-  // display date
-  let date = $("<h5>").text(res);
-  //console.log(date, resDate);
-  $("#forecast").append(date);
-  //add class, id and data-attr
+function displayFiveDay(res, weather, humid, temp, i) {
+    //Make hourlly div
+    let hour = $("<div>").addClass("hour" + i).addClass("col-lg-3");
 
-  // display icon
-  let weath = $("<h5>").text("Weather: " + weather);
-  $("#forecast").append(weath);
-  //add class, id and data-attr
+    // display date
+    let date = $("<h5>").text(res);
+    //console.log(date, resDate);
+    hour.append(date);
+    //add class, id and data-attr
 
-  // display temperature
-  let temperature = $("<h5>").text("Temp: " + temp.toFixed(2));
-  $("#forecast").append(temperature);
-  //add class, id and data-attr
+    // display icon
+    let weath = $("<h5>").text("Weather: " + weather);
+    hour.append(weath);
+    //add class, id and data-attr
 
-  // display humidity
-  let hum = $("<h5>").text("Humidity: " + humid);
-  $("#forecast").append(hum);
-  //add class, id and data-attr
+    // display temperature
+    let temperature = $("<h5>").text("Temp: " + temp.toFixed(2));
+    hour.append(temperature);
+    //add class, id and data-attr
+
+    // display humidity
+    let hum = $("<h5>").text("Humidity: " + humid);
+    hour.append(hum);
+    //add class, id and data-attr
+
+    $("#forecast").append(hour);
 };
 
-// Button
+// display button per search
+function makeButton(results) {
+    
+    let city = results.cityName;
+    let aside = $("#aside")
+
+    // Make Button
+    let btn = $("<button>")
+        .text(city)
+        .addClass("prev-city-button")
+        .addClass("col-lg-12")
+        .attr("data-city", city)
+        .css("display", "flex");
+
+    // Append Button
+    aside.append(btn);
+
+    // Check for old buttons on new searches and remove
+    let oldButtons = $(".prev-city-button");
+    console.log(oldButtons, oldButtons.length);
+    for (let i = 0; i < oldButtons.length - 1; i++) {
+        if (oldButtons[i].innerText === city) {
+            oldButtons[i].remove()
+        }
+    }
+}
 
 $("#search-button").on("click", function (event) {
     event.preventDefault();
+
+    clear();
 
     let queryURL = buildURL();
     console.log(queryURL)
@@ -135,6 +194,7 @@ $("#search-button").on("click", function (event) {
         .then(function (data) {
             let results = createData(data);
             console.log(results);
+            makeButton(results);
 
             display(results);
         });
