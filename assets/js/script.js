@@ -153,7 +153,7 @@ function displayFiveDay(res, weather, humid, temp, i) {
 
 // display button per search
 function makeButton(results) {
-    
+
     let city = results.cityName;
     let aside = $("#aside")
 
@@ -174,9 +174,9 @@ function makeButton(results) {
     for (let i = 0; i < oldButtons.length - 1; i++) {
         if (oldButtons[i].innerText === city) {
             oldButtons[i].remove()
-        }
-    }
-}
+        };
+    };
+};
 
 $("#search-button").on("click", function (event) {
     event.preventDefault();
@@ -195,7 +195,23 @@ $("#search-button").on("click", function (event) {
             let results = createData(data);
             console.log(results);
             makeButton(results);
-
             display(results);
+            console.log($(".prev-city-button"));
         });
+});
+
+// Search with city buttons
+$(document).on("click", ".prev-city-button", function (event) {
+    event.preventDefault();
+
+    let city = $(this).text();
+
+    
+    let stored = localStorage.getItem(localStorage.key(city));
+    console.log(city);
+    clear();
+
+    //display(stored);
+
+
 });
