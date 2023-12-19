@@ -86,8 +86,14 @@ function display(results) {
                 results.weather[i],
                 results.humidity[i],
                 results.temperature[i],
-                i
+                resDate[i], i
             );
+
+            if (resDate[i].$D == resDate[i - 1].$D) {
+                console.log("same")
+            }  else {
+                console.log("diff")
+            }
         };
     };
 };
@@ -123,9 +129,9 @@ function displayToday(results, i) {
     $("#today").append(hour);
 };
 
-function displayFiveDay(res, weather, humid, temp, i) {
-    //Make hourlly div
-    let hour = $("<div>").addClass("hour" + i).addClass("col-lg-3");
+function displayFiveDay(res, weather, humid, temp, resDate, i) {
+    //Make hourly div
+    let hour = $("<div>").addClass("hour" + i).addClass("col-lg-3").attr("data-day",resDate.$D);
 
     // display date
     let date = $("<h5>").text(res);
@@ -202,16 +208,15 @@ $("#search-button").on("click", function (event) {
 
 // Search with city buttons
 $(document).on("click", ".prev-city-button", function (event) {
-    event.preventDefault();
+    clear();
 
     let city = $(this).text();
 
-    
-    let stored = localStorage.getItem(localStorage.key(city));
+    let stored = localStorage.getItem(city);
+    let data = JSON.parse(stored)
     console.log(city);
-    clear();
 
-    //display(stored);
+    display(data);
 
 
 });
