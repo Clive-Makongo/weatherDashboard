@@ -3,6 +3,7 @@
     border: black solid 0.2px;
 } 
 
-section {
-    
+.col {
+    padding: 50px;
+    border: black solid 0.2px;
 }
