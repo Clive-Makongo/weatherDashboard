@@ -69,7 +69,11 @@ function display(results) {
 
     let today = dayjs();
 
-    let name = $("<h2>").text(results.cityName);
+    let name = $("<h2>").text(results.cityName)
+        .css({
+        "text-decoration": "underline",
+        "font-weight":"900"
+});
     let date = $("<h4>").text(today.format('dddd, MMMM D, YYYY'));
 
     $("#city").append(name).append(date);
@@ -81,9 +85,11 @@ function display(results) {
     }
     for (let i = 0; i < results.date.length; i++) {
         if (resDate[i].$D == today.$D) {
-            console.log(resDate[i].$D, today.$D);
+            console.log(resDate[i].$D, today.$D, " How Many");
 
-            displayToday(results, i)
+            console.log("I: ", i)
+            if (i % 2 != 0) {
+            displayToday(results, i)}
         } else {
             displayFiveDay(
                 results.date[i],
@@ -98,10 +104,10 @@ function display(results) {
 
 function displayToday(results, i) {
     //Make hourly div
-    let hour = $("<div>").addClass("hour" + i).addClass("col-lg-3");
+    let hour = $("<div>").addClass("hour" + i).addClass("col-lg-3").addClass("today-box");
 
     // Format the date
-    let formattedDate = dayjs(results.date[i]).format('dddd, MMMM D, YYYY HH:mm:ss');
+    let formattedDate = dayjs(results.date[i]).format('HH:mm:ss');
 
     // Weather icon
     let date = $("<h4>").text(formattedDate);
@@ -133,7 +139,8 @@ function displayToday(results, i) {
         "background-color": "#f0f8ff",
         "border-radius": "8px",
         "padding": "15px",
-        "margin-bottom": "10px"
+        "margin-bottom": "10px",
+        "height": "15%"
     });
 }
 
@@ -148,23 +155,30 @@ function displayFiveDay(res, weather, humid, temp, resDate, i) {
         .css("border", "black solid 0.2px");
 
     // Format the date
-    let formattedDate = resDate.format('dddd, MMMM D, YYYY');
+    let formattedDate = resDate.format('dddd, MMMM D, YYYY HH:mm:ss');
 
     // display date
-    let date = $("<h5>").text(formattedDate);
+    let date = $("<h3>").text(formattedDate).css({
+        "font-size": "24px",
+        "font-weight": "bold",
+        "color": "#333",
+        "margin-bottom": "5%px",
+        "text-decoration": "underline"
+    });;
     hour.append(date);
 
-    // display icon
-    let weath = $("<h5>").text("Weather: " + weather);
+    // Display weather with different fonts
+    let weath = $("<h5>").html('Weather: <span class="weather-data">' + weather + '</span>');
     hour.append(weath);
 
-    // display temperature
-    let temperature = $("<h5>").text("Temp: " + temp.toFixed(2));
+    // Display temperature with different fonts
+    let temperature = $("<h5>").html('Temp: <span class="temperature-data">' + temp.toFixed(2) + '°C</span>');
     hour.append(temperature);
 
-    // display humidity
-    let hum = $("<h5>").text("Humidity: " + humid);
+    // Display humidity with different fonts
+    let hum = $("<h5>").html('Humidity: <span class="humidity-data">' + humid + '%</span>');
     hour.append(hum);
+
 
     if (count <= 8) {
         $("#day-one").append(hour);
@@ -183,7 +197,8 @@ function displayFiveDay(res, weather, humid, temp, resDate, i) {
         "background-color": "#f0f8ff",
         "border-radius": "8px",
         "padding": "15px",
-        "margin-bottom": "10px"
+        "margin-bottom": "10px",
+        "height": "15%"
     });
 }
 

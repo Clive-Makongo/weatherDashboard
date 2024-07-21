@@ -64,7 +64,31 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.temperature-label,
+.humidity-label,
+.weather-label {
+    font-family: 'Arial', sans-serif;
+    /* Example font for label */
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.temperature-data,
+.humidity-data,
+.weather-data {
+    font-family: 'Courier New', monospace;
+    /* Example font for data */
+    font-size: 20px;
+    font-style: italic;
+}
+
 .day-box {
+    background-color: #f0f8ff;
+    margin: 2%;
+    border: black 2px solid;
+}
+
+.today-box {
     background-color: #f0f8ff;
     margin: 2%;
     border: black 2px solid;
@@ -95,3 +119,4 @@ h5 {
 hr {
     border-top: 1px solid #bdc3c7;
 }
+
