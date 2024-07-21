@@ -78,9 +78,9 @@ function display(results) {
 
     let name = $("<h2>").text(results.cityName)
         .css({
-        "text-decoration": "underline",
-        "font-weight":"900"
-});
+            "text-decoration": "underline",
+            "font-weight": "900"
+        });
     let date = $("<h4>").text(today.format('dddd, MMMM D, YYYY'));
 
     $("#city").append(name).append(date);
@@ -96,7 +96,8 @@ function display(results) {
 
             console.log("I: ", i)
             if (i == 3) {
-            displayToday(results, i)}
+                displayToday(results, i)
+            }
         } else {
             displayFiveDay(
                 results.date[i],
