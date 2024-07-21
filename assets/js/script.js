@@ -95,7 +95,7 @@ function display(results) {
             console.log(resDate[i].$D, today.$D, " How Many");
 
             console.log("I: ", i)
-            if (i == 3) {
+            if (i == 0) {
                 displayToday(results, i)
             }
         } else {
