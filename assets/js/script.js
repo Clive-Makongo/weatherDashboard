@@ -38,6 +38,7 @@ function createData(weatherData) {
     let weather = [];
     let humidity = [];
     let windSpeed = [];
+    let icon = [];
     for (let i = 0; i < weatherData.list.length; i++) {
         results.cityName = weatherData.city.name;
 
@@ -55,10 +56,16 @@ function createData(weatherData) {
 
         date.push(weatherData.list[i].dt_txt);
         results.date = date;
+
+        icon.push(weatherData.list[0].weather[0].icon);
+        results.icon = icon;
     }
 
     // store in Local Storage
     localStorage.setItem(results.cityName, JSON.stringify(results));
+
+    console.log("Results: ", results);
+
     return results;
 }
 
@@ -88,7 +95,7 @@ function display(results) {
             console.log(resDate[i].$D, today.$D, " How Many");
 
             console.log("I: ", i)
-            if (i % 2 != 0) {
+            if (i == 3) {
             displayToday(results, i)}
         } else {
             displayFiveDay(
@@ -96,7 +103,9 @@ function display(results) {
                 results.weather[i],
                 results.humidity[i],
                 results.temperature[i],
-                resDate[i], i
+                resDate[i],
+                results.icon[i],
+                i
             );
         }
     }
@@ -109,13 +118,20 @@ function displayToday(results, i) {
     // Format the date
     let formattedDate = dayjs(results.date[i]).format('HH:mm:ss');
 
-    // Weather icon
-    let date = $("<h4>").text(formattedDate);
-    hour.append(date);
+    //Date
+    //let date = $("<h4>").text(formattedDate);
+    //hour.append(date);
 
-    // Weather icon
+    // Weather 
     let weather = $("<h4>").text("Weather: " + results.weather[i]);
     hour.append(weather);
+
+    //Icon
+    let img = $("<img>");
+    let iconcode = results.icon[i];
+    let iconurl = "http://openweathermap.org/img/w/" + iconcode + ".png";
+    $(img).attr('src', iconurl);
+    hour.append(img);
 
     //Temperature
     let temp = $("<h4>").text(
@@ -144,7 +160,7 @@ function displayToday(results, i) {
     });
 }
 
-function displayFiveDay(res, weather, humid, temp, resDate, i) {
+function displayFiveDay(res, weather, humid, temp, resDate, icon, i) {
     // Increment Count for Five Day
     count++;
     //Make hourly div
@@ -166,6 +182,13 @@ function displayFiveDay(res, weather, humid, temp, resDate, i) {
         "text-decoration": "underline"
     });;
     hour.append(date);
+
+    //Icon
+    let img = $("<img>");
+    let iconcode = icon;
+    let iconurl = "http://openweathermap.org/img/w/" + iconcode + ".png";
+    $(img).attr('src', iconurl);
+    hour.append(img);
 
     // Display weather with different fonts
     let weath = $("<h5>").html('Weather: <span class="weather-data">' + weather + '</span>');
