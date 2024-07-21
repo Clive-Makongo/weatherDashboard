@@ -33,12 +33,14 @@ function clear() {
 function createData(weatherData) {
     console.log("Weather data:", weatherData);
     let results = {};
-    date = [];
+    let date = [];
     let temp = [];
     let weather = [];
     let humidity = [];
     let windSpeed = [];
-    for (let i = 0; i < weatherData.list.length - 1; i++) {
+
+    for (let i = 0; i < weatherData.list.length; i++) {
+
         results.cityName = weatherData.city.name;
 
         weather.push(weatherData.list[i].weather[0].main);
@@ -70,27 +72,30 @@ function display(results) {
 
     let today = dayjs();
 
-    let name = $("<h2>").text(results.cityName);
-    let date = $("<h4>").text(today.$d)
+    let name = $("<h2>").text(results.cityName)
+        .css({
+        "text-decoration": "underline",
+        "font-weight":"900"
+});
+    let date = $("<h4>").text(today.format('dddd, MMMM D, YYYY'));
 
     $("#city").append(name).append(date);
 
     let resDate = [];
 
-    for (let i = 0; i < results.date.length - 1; i++) {
-        resDate[i] = dayjs(results.date[i], "DD-MM-YYYY");
+    for (let i = 0; i < results.date.length; i++) {
+        resDate[i] = dayjs(results.date[i], "YYYY-MM-DD HH:mm:ss");
     }
-    console.log("ResDate array:", resDate);
-    console.log("Today:", today);
 
-    for (let i = 0; i < results.date.length - 1; i++) {
-        if (resDate[i].isSame(today, 'day')) {
-            console.log("Match found for today. Index:", i);
-            console.log("ResDate[i]:", resDate[i].format('YYYY-MM-DD'), "Today:", today.format('YYYY-MM-DD'));
-            displayToday(results, i);
+    for (let i = 0; i < results.date.length; i++) {
+        if (resDate[i].$D == today.$D) {
+            console.log(resDate[i].$D, today.$D, " How Many");
+
+            console.log("I: ", i)
+            if (i % 2 != 0) {
+            displayToday(results, i)}
         } else {
-            console.log("No match for today. Index:", i);
-            console.log("No match for today. Day:", today.$D);
+
             displayFiveDay(
                 results.date[i],
                 results.weather[i],
@@ -103,20 +108,21 @@ function display(results) {
 }
 
 function displayToday(results, i) {
-    console.log("displayToday called with index:", i);
-    console.log("Today element exists:", $("#today").length > 0);
-    console.log("Today element is empty:", $("#today").is(":empty"));
 
-    //Make hourlly div
-    let hour = $("<div>").addClass("hour" + i).addClass("col-lg-3");
+    //Make hourly div
+    let hour = $("<div>").addClass("hour" + i).addClass("col-lg-3").addClass("today-box");
+
+    // Format the date
+    let formattedDate = dayjs(results.date[i]).format('HH:mm:ss');
+
 
     // Weather icon
-    let date = $("<h4>").text(results.date[i]);
+    let date = $("<h4>").text(formattedDate);
     hour.append(date);
 
     // Weather icon
     let weather = $("<h4>").text("Weather: " + results.weather[i]);
-    hour.append(weather)
+    hour.append(weather);
 
     //Temperature
     let temp = $("<h4>").text(
@@ -128,7 +134,7 @@ function displayToday(results, i) {
     let hum = $("<h4>").text("Humidity: " + results.humidity[i]);
     hour.append(hum);
 
-    //Humidity
+    //Wind Speed
     let wind = $("<h4>").text("Wind Speed: " + results.windSpeed[i]);
     hour.append(wind);
 
@@ -136,34 +142,57 @@ function displayToday(results, i) {
 
     //Append to Today div
     $("#today").append(hour);
+
+    // Apply CSS changes with jQuery
+    hour.css({
+        "background-color": "#f0f8ff",
+        "border-radius": "8px",
+        "padding": "15px",
+        "margin-bottom": "10px",
+        "height": "15%"
+    });
+
     console.log("After append, Today element content:", $("#today").html());
+
 }
 
 function displayFiveDay(res, weather, humid, temp, resDate, i) {
     // Increment Count for Five Day
-    count++
+    count++;
     //Make hourly div
     let hour = $("<div>")
         .addClass("hour" + i)
-        .addClass("col")
-        .attr("data-day", resDate.$D)
-        .css("border", "black solid 0.2px;");
+
+        .addClass("col day-box")
+        .attr("data-day", resDate.format('D'))
+        .css("border", "black solid 0.2px");
+
+    // Format the date
+    let formattedDate = resDate.format('dddd, MMMM D, YYYY HH:mm:ss');
 
     // display date
-    let date = $("<h5>").text(res);
+    let date = $("<h3>").text(formattedDate).css({
+        "font-size": "24px",
+        "font-weight": "bold",
+        "color": "#333",
+        "margin-bottom": "5%px",
+        "text-decoration": "underline"
+    });;
+
     hour.append(date);
 
-    // display icon
-    let weath = $("<h5>").text("Weather: " + weather);
+    // Display weather with different fonts
+    let weath = $("<h5>").html('Weather: <span class="weather-data">' + weather + '</span>');
     hour.append(weath);
 
-    // display temperature
-    let temperature = $("<h5>").text("Temp: " + temp.toFixed(2));
+    // Display temperature with different fonts
+    let temperature = $("<h5>").html('Temp: <span class="temperature-data">' + temp.toFixed(2) + '°C</span>');
     hour.append(temperature);
 
-    // display humidity
-    let hum = $("<h5>").text("Humidity: " + humid);
+    // Display humidity with different fonts
+    let hum = $("<h5>").html('Humidity: <span class="humidity-data">' + humid + '%</span>');
     hour.append(hum);
+
 
     if (count <= 8) {
         $("#day-one").append(hour);
@@ -176,30 +205,47 @@ function displayFiveDay(res, weather, humid, temp, resDate, i) {
     } else {
         $("#day-five").append(hour);
     }
+
+
+    // Apply CSS changes with jQuery
+    hour.css({
+        "background-color": "#f0f8ff",
+        "border-radius": "8px",
+        "padding": "15px",
+        "margin-bottom": "10px",
+        "height": "15%"
+    });
+
 }
 
 // display button per search
 function makeButton(results) {
     let city = results.cityName;
-    let aside = $("#aside")
+    let aside = $("#aside");
 
     // Make Button
     let btn = $("<button>")
         .text(city)
         .addClass("prev-city-button")
-        .addClass("col-lg-12")
+        .addClass("col-lg-12 col-sm-12")
         .attr("data-city", city)
         .css("display", "flex");
 
     // Append Button
     aside.append(btn);
 
+    btn.css({
+        "color": "black"
+    });
+
     // Check for old buttons on new searches and remove
     let oldButtons = $(".prev-city-button");
     console.log("Old buttons:", oldButtons, "Length:", oldButtons.length);
     for (let i = 0; i < oldButtons.length - 1; i++) {
         if (oldButtons[i].innerText === city) {
-            oldButtons[i].remove()
+
+            oldButtons[i].remove();
+
         }
     }
 }
@@ -210,7 +256,6 @@ $("#search-button").on("click", function (event) {
     clear();
 
     let queryURL = buildURL();
-    console.log("Search button clicked. Query URL:", queryURL)
 
     //fetch API object
     fetch(queryURL)
@@ -222,7 +267,7 @@ $("#search-button").on("click", function (event) {
             console.log("API data received:", results);
             makeButton(results);
             display(results);
-            console.log("After display function");
+
         });
 });
 
@@ -240,4 +285,7 @@ $(document).on("click", ".prev-city-button", function (event) {
     console.log("Stored data for city:", city, data);
 
     display(data);
+
 });
+
+
