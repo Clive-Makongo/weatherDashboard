@@ -12,8 +12,8 @@ function buildURL() {
         "&appid=" +
         APIKey;
 
-    console.log("Query URL:", queryURL);
-    console.log("Search input:", $("#search-input").val());
+    console.log(queryURL);
+    console.log($("#search-input").val());
 
     return queryURL;
 }
@@ -31,16 +31,15 @@ function clear() {
 
 // Create object with data
 function createData(weatherData) {
-    console.log("Weather data:", weatherData);
+    console.log(weatherData);
     let results = {};
     let date = [];
     let temp = [];
     let weather = [];
     let humidity = [];
     let windSpeed = [];
-
+    let icon = [];
     for (let i = 0; i < weatherData.list.length; i++) {
-
         results.cityName = weatherData.city.name;
 
         weather.push(weatherData.list[i].weather[0].main);
@@ -57,16 +56,21 @@ function createData(weatherData) {
 
         date.push(weatherData.list[i].dt_txt);
         results.date = date;
+
+        icon.push(weatherData.list[0].weather[0].icon);
+        results.icon = icon;
     }
 
     // store in Local Storage
     localStorage.setItem(results.cityName, JSON.stringify(results));
+
+    console.log("Results: ", results);
+
     return results;
 }
 
 // display data on page
 function display(results) {
-    console.log("Display function called with results:", results);
     // Set count for 5 day back to 0
     count = 0;
 
@@ -74,9 +78,9 @@ function display(results) {
 
     let name = $("<h2>").text(results.cityName)
         .css({
-        "text-decoration": "underline",
-        "font-weight":"900"
-});
+            "text-decoration": "underline",
+            "font-weight": "900"
+        });
     let date = $("<h4>").text(today.format('dddd, MMMM D, YYYY'));
 
     $("#city").append(name).append(date);
@@ -86,43 +90,49 @@ function display(results) {
     for (let i = 0; i < results.date.length; i++) {
         resDate[i] = dayjs(results.date[i], "YYYY-MM-DD HH:mm:ss");
     }
-
     for (let i = 0; i < results.date.length; i++) {
         if (resDate[i].$D == today.$D) {
             console.log(resDate[i].$D, today.$D, " How Many");
 
             console.log("I: ", i)
-            if (i % 2 != 0) {
-            displayToday(results, i)}
+            if (i == 3) {
+                displayToday(results, i)
+            }
         } else {
-
             displayFiveDay(
                 results.date[i],
                 results.weather[i],
                 results.humidity[i],
                 results.temperature[i],
-                resDate[i], i
+                resDate[i],
+                results.icon[i],
+                i
             );
         }
     }
 }
 
 function displayToday(results, i) {
-
     //Make hourly div
     let hour = $("<div>").addClass("hour" + i).addClass("col-lg-3").addClass("today-box");
 
     // Format the date
     let formattedDate = dayjs(results.date[i]).format('HH:mm:ss');
 
+    //Date
+    //let date = $("<h4>").text(formattedDate);
+    //hour.append(date);
 
-    // Weather icon
-    let date = $("<h4>").text(formattedDate);
-    hour.append(date);
-
-    // Weather icon
+    // Weather 
     let weather = $("<h4>").text("Weather: " + results.weather[i]);
     hour.append(weather);
+
+    //Icon
+    let img = $("<img>");
+    let iconcode = results.icon[i];
+    let iconurl = "http://openweathermap.org/img/w/" + iconcode + ".png";
+    $(img).attr('src', iconurl);
+    hour.append(img);
 
     //Temperature
     let temp = $("<h4>").text(
@@ -138,8 +148,6 @@ function displayToday(results, i) {
     let wind = $("<h4>").text("Wind Speed: " + results.windSpeed[i]);
     hour.append(wind);
 
-    console.log("Hour element created:", hour);
-
     //Append to Today div
     $("#today").append(hour);
 
@@ -151,18 +159,14 @@ function displayToday(results, i) {
         "margin-bottom": "10px",
         "height": "15%"
     });
-
-    console.log("After append, Today element content:", $("#today").html());
-
 }
 
-function displayFiveDay(res, weather, humid, temp, resDate, i) {
+function displayFiveDay(res, weather, humid, temp, resDate, icon, i) {
     // Increment Count for Five Day
     count++;
     //Make hourly div
     let hour = $("<div>")
         .addClass("hour" + i)
-
         .addClass("col day-box")
         .attr("data-day", resDate.format('D'))
         .css("border", "black solid 0.2px");
@@ -178,8 +182,14 @@ function displayFiveDay(res, weather, humid, temp, resDate, i) {
         "margin-bottom": "5%px",
         "text-decoration": "underline"
     });;
-
     hour.append(date);
+
+    //Icon
+    let img = $("<img>");
+    let iconcode = icon;
+    let iconurl = "http://openweathermap.org/img/w/" + iconcode + ".png";
+    $(img).attr('src', iconurl);
+    hour.append(img);
 
     // Display weather with different fonts
     let weath = $("<h5>").html('Weather: <span class="weather-data">' + weather + '</span>');
@@ -206,7 +216,6 @@ function displayFiveDay(res, weather, humid, temp, resDate, i) {
         $("#day-five").append(hour);
     }
 
-
     // Apply CSS changes with jQuery
     hour.css({
         "background-color": "#f0f8ff",
@@ -215,11 +224,11 @@ function displayFiveDay(res, weather, humid, temp, resDate, i) {
         "margin-bottom": "10px",
         "height": "15%"
     });
-
 }
 
 // display button per search
 function makeButton(results) {
+
     let city = results.cityName;
     let aside = $("#aside");
 
@@ -240,12 +249,10 @@ function makeButton(results) {
 
     // Check for old buttons on new searches and remove
     let oldButtons = $(".prev-city-button");
-    console.log("Old buttons:", oldButtons, "Length:", oldButtons.length);
+    console.log(oldButtons, oldButtons.length);
     for (let i = 0; i < oldButtons.length - 1; i++) {
         if (oldButtons[i].innerText === city) {
-
             oldButtons[i].remove();
-
         }
     }
 }
@@ -256,6 +263,7 @@ $("#search-button").on("click", function (event) {
     clear();
 
     let queryURL = buildURL();
+    console.log(queryURL);
 
     //fetch API object
     fetch(queryURL)
@@ -264,10 +272,9 @@ $("#search-button").on("click", function (event) {
         })
         .then(function (data) {
             let results = createData(data);
-            console.log("API data received:", results);
+            console.log(results);
             makeButton(results);
             display(results);
-
         });
 });
 
@@ -282,10 +289,7 @@ $(document).on("click", ".prev-city-button", function (event) {
 
     let stored = localStorage.getItem(city);
     let data = JSON.parse(stored)
-    console.log("Stored data for city:", city, data);
+    console.log(city);
 
     display(data);
-
 });
-
-
