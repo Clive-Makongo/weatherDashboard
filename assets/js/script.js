@@ -90,6 +90,7 @@ function display(results) {
     for (let i = 0; i < results.date.length; i++) {
         resDate[i] = dayjs(results.date[i], "YYYY-MM-DD");
     }
+    console.log(resDate, " RES DATE")
     for (let i = 0; i < results.date.length; i++) {
         if (resDate[i].$D == today.$D) {
             console.log(resDate[i].$D, today.$D, " How Many");
@@ -99,17 +100,19 @@ function display(results) {
                 displayToday(results, i)
             }
         } else {
-            if (i == 3) {
-                displayFiveDay(
-                    results.date[i],
-                    results.weather[i],
-                    results.humidity[i],
-                    results.temperature[i],
-                    resDate[i],
-                    results.icon[i],
-                    i
-                );
-            }
+            
+            if (results.date[i].split(" ")[1] === "09:00:00") {
+                console.log("TWELVE ", i); displayFiveDay(
+                results.date[i],
+                results.weather[i],
+                results.humidity[i],
+                results.temperature[i],
+                resDate[i],
+                results.icon[i],
+                i
+            );}
+            
+
         }
     }
 }
@@ -174,7 +177,8 @@ function displayFiveDay(res, weather, humid, temp, resDate, icon, i) {
         .css("border", "black solid 0.2px");
 
     // Format the date
-    let formattedDate = resDate.format('dddd, MMMM D, YYYY HH:mm:ss');
+    let formattedDate = resDate.format('dddd, MMMM D, YYYY');
+    console.log(formattedDate, " FORMATTED DATE")
 
     // display date
     let date = $("<h3>").text(formattedDate).css({
@@ -184,6 +188,8 @@ function displayFiveDay(res, weather, humid, temp, resDate, icon, i) {
         "margin-bottom": "5%px",
         "text-decoration": "underline"
     });;
+
+
     hour.append(date);
 
     //Icon
@@ -206,15 +212,15 @@ function displayFiveDay(res, weather, humid, temp, resDate, icon, i) {
     hour.append(hum);
 
 
-    if (count <= 8) {
+    if (count == 1) {
         $("#day-one").append(hour);
-    } else if (count > 8 && count <= 16) {
+    } else if (count == 2) {
         $("#day-two").append(hour);
-    } else if (count > 16 && count <= 24) {
+    } else if (count == 3) {
         $("#day-three").append(hour);
-    } else if (count > 24 && count <= 32) {
+    } else if (count== 4) {
         $("#day-four").append(hour);
-    } else {
+    } else if (count == 5) {
         $("#day-five").append(hour);
     }
 
@@ -222,9 +228,9 @@ function displayFiveDay(res, weather, humid, temp, resDate, icon, i) {
     hour.css({
         "background-color": "#f0f8ff",
         "border-radius": "8px",
-        "padding": "15px",
+        "padding": "5%",
         "margin-bottom": "10px",
-        "height": "15%"
+        "height": "100%"
     });
 }
 
