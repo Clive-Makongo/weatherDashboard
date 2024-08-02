@@ -88,7 +88,7 @@ function display(results) {
     let resDate = [];
 
     for (let i = 0; i < results.date.length; i++) {
-        resDate[i] = dayjs(results.date[i], "YYYY-MM-DD HH:mm:ss");
+        resDate[i] = dayjs(results.date[i], "YYYY-MM-DD");
     }
     for (let i = 0; i < results.date.length; i++) {
         if (resDate[i].$D == today.$D) {
@@ -99,15 +99,17 @@ function display(results) {
                 displayToday(results, i)
             }
         } else {
-            displayFiveDay(
-                results.date[i],
-                results.weather[i],
-                results.humidity[i],
-                results.temperature[i],
-                resDate[i],
-                results.icon[i],
-                i
-            );
+            if (i == 3) {
+                displayFiveDay(
+                    results.date[i],
+                    results.weather[i],
+                    results.humidity[i],
+                    results.temperature[i],
+                    resDate[i],
+                    results.icon[i],
+                    i
+                );
+            }
         }
     }
 }
