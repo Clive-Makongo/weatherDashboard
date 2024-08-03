@@ -101,7 +101,7 @@ function display(results) {
             }
         } else {
             
-            if (results.date[i].split(" ")[1] === "09:00:00") {
+            if (results.date[i].split(" ")[1] === "00:00:00") {
                 console.log("TWELVE ", i); displayFiveDay(
                 results.date[i],
                 results.weather[i],
