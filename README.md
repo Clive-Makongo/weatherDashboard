@@ -1,4 +1,4 @@
-# Weather Dashboard
+# [Weather Dashboard](https://clive-makongo.github.io/weatherDashboard/)
 
 ## Description
 
